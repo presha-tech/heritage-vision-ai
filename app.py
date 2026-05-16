@@ -22,9 +22,9 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # MODEL DOWNLOAD
 # ─────────────────────────────────────────────────────────────
 
-MODEL_PATH = "heritage_resnet_model.h5"
+MODEL_PATH = "best_resnet_model.h5"
 
-MODEL_URL = "https://huggingface.co/presha-tech/heritage-vision-model/resolve/main/heritage_resnet_model.h5"
+MODEL_URL = "https://huggingface.co/presha-tech/heritage-vision-model/resolve/main/best_resnet_model.h5"
 
 if not os.path.exists(MODEL_PATH):
 
