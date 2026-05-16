@@ -1,156 +1,279 @@
 # app.py
 
-from flask import Flask, render_template, request
 import os
-import subprocess
 import sqlite3
+import urllib.request
+
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# =========================
+# ─────────────────────────────────────────────────────────────
 # UPLOAD FOLDER
-# =========================
+# ─────────────────────────────────────────────────────────────
 
 UPLOAD_FOLDER = "static/uploads"
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Create uploads folder automatically
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# =========================
-# HOME PAGE
-# =========================
+# ─────────────────────────────────────────────────────────────
+# MODEL DOWNLOAD
+# ─────────────────────────────────────────────────────────────
+
+MODEL_PATH = "heritage_resnet_model.h5"
+
+MODEL_URL = "https://huggingface.co/presha-tech/heritage-vision-model/resolve/main/heritage_resnet_model.h5"
+
+if not os.path.exists(MODEL_PATH):
+
+    print("Downloading model from Hugging Face...")
+
+    urllib.request.urlretrieve(
+        MODEL_URL,
+        MODEL_PATH
+    )
+
+    print("Model downloaded successfully!")
+
+# ─────────────────────────────────────────────────────────────
+# LAZY LOAD MODEL
+# ─────────────────────────────────────────────────────────────
+
+_model = None
+
+def get_model():
+
+    global _model
+
+    if _model is None:
+
+        from tensorflow.keras.models import load_model
+
+        print("Loading TensorFlow model...")
+
+        _model = load_model(MODEL_PATH)
+
+        print("Model loaded successfully!")
+
+    return _model
+
+# ─────────────────────────────────────────────────────────────
+# CLASS LABELS
+# ─────────────────────────────────────────────────────────────
+
+CLASS_NAMES = [
+
+    "Charminar",
+
+    "Gateway of India",
+
+    "Qutub Minar",
+
+    "Sun Temple Konark",
+
+    "Taj Mahal",
+]
+
+# ─────────────────────────────────────────────────────────────
+# PREDICTION FUNCTION
+# ─────────────────────────────────────────────────────────────
+
+def predict_monument(filepath):
+
+    import numpy as np
+
+    from tensorflow.keras.preprocessing import image
+
+    from tensorflow.keras.applications.resnet50 import preprocess_input
+
+    model = get_model()
+
+    img = image.load_img(
+        filepath,
+        target_size=(224, 224)
+    )
+
+    img_array = image.img_to_array(img)
+
+    img_array = preprocess_input(
+        img_array[None, ...]
+    )
+
+    predictions = model.predict(
+        img_array,
+        verbose=0
+    )
+
+    predicted_index = int(
+        predictions.argmax()
+    )
+
+    confidence = float(
+        predictions.max()
+    ) * 100
+
+    monument = CLASS_NAMES[predicted_index]
+
+    return monument, confidence
+
+# ─────────────────────────────────────────────────────────────
+# HOME ROUTE
+# ─────────────────────────────────────────────────────────────
 
 @app.route("/")
 def home():
+
     return render_template("index.html")
 
-# =========================
-# PREDICTION
-# =========================
+# ─────────────────────────────────────────────────────────────
+# PREDICT ROUTE
+# ─────────────────────────────────────────────────────────────
 
 @app.route("/predict", methods=["POST"])
 def predict():
 
-    # =========================
-    # CHECK IMAGE
-    # =========================
+    try:
 
-    if "image" not in request.files:
-        return "No file uploaded"
+        if "image" not in request.files:
 
-    file = request.files["image"]
+            return render_template(
+                "index.html",
+                error="No image uploaded."
+            )
 
-    if file.filename == "":
-        return "No selected file"
+        file = request.files["image"]
 
-    # =========================
-    # SAVE IMAGE
-    # =========================
+        if file.filename == "":
 
-    filepath = os.path.join(
-        app.config["UPLOAD_FOLDER"],
-        file.filename
-    )
+            return render_template(
+                "index.html",
+                error="No image selected."
+            )
 
-    file.save(filepath)
+        # Secure filename
 
-    # =========================
-    # RUN AI MODEL
-    # =========================
+        from werkzeug.utils import secure_filename
 
-    result = subprocess.check_output(
-        ["python", "predict.py", filepath]
-    ).decode("utf-8")
+        filename = secure_filename(
+            file.filename
+        )
 
-    # Clean TensorFlow logs if present
-    result_lines = result.strip().split("\n")
+        filepath = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            filename
+        )
 
-    final_result = result_lines[-1]
+        # Save uploaded image
 
-    monument, confidence = final_result.split("|")
+        file.save(filepath)
 
-    # =========================
-    # FETCH MONUMENT INFO
-    # =========================
+        # Predict monument
 
-    conn = sqlite3.connect("monuments.db")
+        monument, confidence = predict_monument(
+            filepath
+        )
 
-    cursor = conn.cursor()
+        # ─────────────────────────────────────────────────────
+        # FETCH HISTORICAL INFORMATION
+        # ─────────────────────────────────────────────────────
 
-    cursor.execute("""
+        db_path = os.path.join(
+            os.path.dirname(__file__),
+            "monuments.db"
+        )
 
-    SELECT
-        history,
-        dynasty,
-        construction_period,
-        architecture,
-        unesco_status,
-        tourism_facts
+        conn = sqlite3.connect(db_path)
 
-    FROM monuments
+        cursor = conn.cursor()
 
-    WHERE name = ?
+        cursor.execute(
+            """
 
-    """, (monument,))
+            SELECT
+                history,
+                dynasty,
+                construction_period,
+                architecture,
+                unesco_status,
+                tourism_facts
 
-    data = cursor.fetchone()
+            FROM monuments
 
-    conn.close()
+            WHERE name = ?
 
-    # =========================
-    # HANDLE MISSING DATA
-    # =========================
+            """,
+            (monument,)
+        )
 
-    if data:
+        row = cursor.fetchone()
 
-        history = data[0]
-        dynasty = data[1]
-        construction_period = data[2]
-        architecture = data[3]
-        unesco_status = data[4]
-        tourism_facts = data[5]
+        conn.close()
 
-    else:
+        NOT_AVAILABLE = "Information not available."
 
-        history = "Information not available."
-        dynasty = "Information not available."
-        construction_period = "Information not available."
-        architecture = "Information not available."
-        unesco_status = "Information not available."
-        tourism_facts = "Information not available."
+        if row:
 
-    # =========================
-    # RETURN RESULT PAGE
-    # =========================
+            history = row[0]
+            dynasty = row[1]
+            construction_period = row[2]
+            architecture = row[3]
+            unesco_status = row[4]
+            tourism_facts = row[5]
 
-    return render_template(
+        else:
 
-        "result.html",
+            history = NOT_AVAILABLE
+            dynasty = NOT_AVAILABLE
+            construction_period = NOT_AVAILABLE
+            architecture = NOT_AVAILABLE
+            unesco_status = NOT_AVAILABLE
+            tourism_facts = NOT_AVAILABLE
 
-        monument=monument,
+        # ─────────────────────────────────────────────────────
+        # RETURN RESULT PAGE
+        # ─────────────────────────────────────────────────────
 
-        confidence=confidence,
+        return render_template(
 
-        image_path=filepath,
+            "result.html",
 
-        history=history,
+            monument=monument,
 
-        dynasty=dynasty,
+            confidence=f"{confidence:.2f}",
 
-        construction_period=construction_period,
+            image_path=filepath,
 
-        architecture=architecture,
+            history=history,
 
-        unesco_status=unesco_status,
+            dynasty=dynasty,
 
-        tourism_facts=tourism_facts
-    )
+            construction_period=construction_period,
 
-# =========================
+            architecture=architecture,
+
+            unesco_status=unesco_status,
+
+            tourism_facts=tourism_facts
+        )
+
+    except Exception as e:
+
+        return f"ERROR: {str(e)}"
+
+# ─────────────────────────────────────────────────────────────
 # RUN APP
-# =========================
+# ─────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    app.run(debug=True)
+
+    port = int(
+        os.environ.get("PORT", 5000)
+    )
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )

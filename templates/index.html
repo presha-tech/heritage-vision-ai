@@ -1,65 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sanskriti Sphere</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Heritage Vision AI — Indian Monument Recognition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ochre:     #C8843A;
+      --deep:      #1A1208;
+      --stone:     #EDE4D4;
+      --sand:      #F7F2E8;
+      --rust:      #8B3A1A;
+      --muted:     #8A7B6A;
+      --border:    rgba(200,132,58,0.25);
+    }
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--sand);
+      color: var(--deep);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── BACKGROUND ORNAMENT ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 70% 60% at 15% 20%, rgba(200,132,58,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 80%, rgba(139,58,26,0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── ARCH PATTERN ── */
+    .arch-bg {
+      position: fixed;
+      bottom: -80px; right: -80px;
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      border: 80px solid rgba(200,132,58,0.06);
+      pointer-events: none; z-index: 0;
+    }
+    .arch-bg2 {
+      position: fixed;
+      top: -100px; left: -100px;
+      width: 350px; height: 350px;
+      border-radius: 50%;
+      border: 60px solid rgba(200,132,58,0.05);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── LAYOUT ── */
+    .page {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--ochre);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--deep);
+    }
+    .logo-sub {
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: block;
+      margin-top: -3px;
+    }
+
+    nav {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .badge-filled {
+      background: var(--ochre);
+      color: white;
+      border-color: var(--ochre);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px 80px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ochre);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .eyebrow::before, .eyebrow::after {
+      content: '';
+      display: block;
+      width: 32px; height: 1px;
+      background: var(--ochre);
+      opacity: 0.5;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 300;
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: var(--deep);
+      max-width: 800px;
+      margin-bottom: 12px;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--ochre);
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 52px;
+    }
+
+    /* ── UPLOAD CARD ── */
+    .upload-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px;
+      width: 100%;
+      max-width: 560px;
+      box-shadow:
+        0 1px 3px rgba(0,0,0,0.04),
+        0 8px 32px rgba(200,132,58,0.06),
+        0 32px 64px rgba(0,0,0,0.04);
+      animation: rise 0.6s ease both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      margin-bottom: 24px;
+      background: var(--sand);
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--ochre);
+      background: rgba(200,132,58,0.04);
+    }
+    .drop-zone input[type=file] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+    }
+
+    .drop-icon {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .drop-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--deep);
+      margin-bottom: 6px;
+    }
+    .drop-hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* Preview */
+    #preview-container {
+      display: none;
+      margin-bottom: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    #preview-container img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+    .preview-label {
+      position: absolute;
+      bottom: 8px; left: 8px;
+      background: rgba(26,18,8,0.7);
+      color: white;
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+    }
+    .preview-remove {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: rgba(26,18,8,0.6);
+      color: white;
+      border: none;
+      cursor: pointer;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      font-size: 14px;
+      line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .preview-remove:hover { background: var(--rust); }
+
+    /* Submit btn */
+    .btn-analyse {
+      width: 100%;
+      padding: 16px 24px;
+      background: var(--deep);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-analyse:hover {
+      background: var(--rust);
+      transform: translateY(-1px);
+    }
+    .btn-analyse:active { transform: translateY(0); }
+    .btn-analyse:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+    }
+
+    /* Loading state */
+    .spinner {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Monuments strip */
+    .monuments-strip {
+      margin-top: 56px;
+      width: 100%;
+      max-width: 720px;
+      text-align: center;
+    }
+    .strip-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .monument-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .monument-tag {
+      font-size: 0.78rem;
+      font-weight: 400;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: white;
+      cursor: default;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .monument-tag:hover {
+      border-color: var(--ochre);
+      color: var(--ochre);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 20px 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .footer-right {
+      display: flex; gap: 20px;
+    }
+
+    @media (max-width: 640px) {
+      header { padding: 20px 20px; }
+      nav { display: none; }
+      .upload-card { padding: 28px 20px; }
+      footer { padding: 16px 20px; flex-direction: column; gap: 8px; }
+    }
+  </style>
 </head>
 <body>
+<div class="arch-bg"></div>
+<div class="arch-bg2"></div>
 
-    <header class="navbar">
+<div class="page">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🏛</div>
+      <div>
+        <span class="logo-text">Heritage Vision</span>
+        <span class="logo-sub">AI Recognition</span>
+      </div>
+    </div>
+    <nav>
+      <span class="badge">ResNet50</span>
+      <span class="badge badge-filled">5 Monuments</span>
+    </nav>
+  </header>
 
-        <div class="logo">
-            🛕 SANSKRITI SPHERE
-        </div>
+  <main class="hero">
+    <p class="eyebrow">AI-powered · Transfer Learning · Instant Results</p>
+    <h1>Identify India's <em>iconic</em><br>monuments</h1>
+    <p class="subtitle">Upload a photograph and our ResNet50 model will identify the monument and surface its history, dynasty, and cultural significance.</p>
 
-        <div class="nav-btn">
-            HERITAGE VISION AI
-        </div>
+    <form class="upload-card" action="/predict" method="POST" enctype="multipart/form-data" id="upload-form">
+      <div id="preview-container">
+        <img id="preview-img" src="" alt="Preview"/>
+        <span class="preview-label">Ready to analyse</span>
+        <button type="button" class="preview-remove" id="remove-btn" title="Remove">✕</button>
+      </div>
 
-    </header>
+      <div class="drop-zone" id="drop-zone">
+        <input type="file" name="image" id="file-input" accept="image/*" required />
+        <span class="drop-icon">🖼</span>
+        <p class="drop-title">Drop your image here</p>
+        <p class="drop-hint">or click to browse · JPG, PNG, WEBP</p>
+      </div>
 
-    <section class="hero">
+      <button class="btn-analyse" type="submit" id="submit-btn" disabled>
+        <span class="spinner" id="spinner"></span>
+        <span id="btn-text">Select an image to analyse</span>
+      </button>
+    </form>
 
-        <h1>
-            UNVEIL INDIA’S
-            <span>SACRED STONES</span>
-        </h1>
+    <div class="monuments-strip">
+      <p class="strip-label">Supported monuments</p>
+      <div class="monument-tags">
+        <span class="monument-tag">🕌 Taj Mahal</span>
+        <span class="monument-tag">🕍 Charminar</span>
+        <span class="monument-tag">⛩ Gateway of India</span>
+        <span class="monument-tag">🗼 Qutub Minar</span>
+        <span class="monument-tag">☀️ Sun Temple Konark</span>
+      </div>
+    </div>
+  </main>
 
-        <p>
-            Upload any photograph of an Indian monument and let our AI historian
-            reveal its secrets, stories, and soul.
-        </p>
+  <footer>
+    <span>Heritage Vision AI · Built with TensorFlow &amp; Flask</span>
+    <div class="footer-right">
+      <span>ResNet50 Transfer Learning</span>
+      <span>SQLite Knowledge Base</span>
+    </div>
+  </footer>
+</div>
 
-    </section>
+<script>
+  const fileInput  = document.getElementById('file-input');
+  const dropZone   = document.getElementById('drop-zone');
+  const previewCon = document.getElementById('preview-container');
+  const previewImg = document.getElementById('preview-img');
+  const removeBtn  = document.getElementById('remove-btn');
+  const submitBtn  = document.getElementById('submit-btn');
+  const btnText    = document.getElementById('btn-text');
+  const spinner    = document.getElementById('spinner');
+  const form       = document.getElementById('upload-form');
 
-    <section class="upload-section">
+  function showPreview(file) {
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    previewImg.src = url;
+    previewCon.style.display = 'block';
+    dropZone.style.display   = 'none';
+    submitBtn.disabled = false;
+    btnText.textContent = 'Analyse Monument';
+  }
 
-        <form action="/predict" method="POST" enctype="multipart/form-data">
+  function resetUpload() {
+    previewCon.style.display = 'none';
+    dropZone.style.display   = 'block';
+    fileInput.value = '';
+    submitBtn.disabled = true;
+    btnText.textContent = 'Select an image to analyse';
+  }
 
-            <div class="upload-box">
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) showPreview(fileInput.files[0]);
+  });
 
-                <div class="icon">
-                    🏛️
-                </div>
+  removeBtn.addEventListener('click', resetUpload);
 
-                <h2>OFFER YOUR PHOTOGRAPH</h2>
+  // Drag & drop
+  ['dragover','dragenter'].forEach(e => dropZone.addEventListener(e, ev => {
+    ev.preventDefault(); dropZone.classList.add('dragover');
+  }));
+  ['dragleave','drop'].forEach(e => dropZone.addEventListener(e, ev => {
+    ev.preventDefault(); dropZone.classList.remove('dragover');
+  }));
+  dropZone.addEventListener('drop', ev => {
+    const file = ev.dataTransfer.files[0];
+    if (file) { fileInput.files = ev.dataTransfer.files; showPreview(file); }
+  });
 
-                <p>Drop an image here, or click to choose a file</p>
-
-                <input type="file" name="image" required>
-
-                <button type="submit">
-                    ↑ CHOOSE IMAGE
-                </button>
-
-            </div>
-
-        </form>
-
-    </section>
-
+  // Loading state
+  form.addEventListener('submit', () => {
+    submitBtn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.textContent = 'Analysing…';
+  });
+</script>
 </body>
 </html>

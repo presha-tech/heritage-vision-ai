@@ -1,106 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ monument }} — Heritage Vision AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ochre:   #C8843A;
+      --deep:    #1A1208;
+      --stone:   #EDE4D4;
+      --sand:    #F7F2E8;
+      --rust:    #8B3A1A;
+      --muted:   #8A7B6A;
+      --border:  rgba(200,132,58,0.25);
+      --green:   #2D7A4F;
+    }
 
-    <meta charset="UTF-8">
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    html, body {
+      min-height: 100%;
+      background: var(--sand);
+      color: var(--deep);
+      font-family: 'DM Sans', sans-serif;
+    }
 
-    <title>Prediction Result</title>
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(ellipse 70% 60% at 15% 20%, rgba(200,132,58,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 80%, rgba(139,58,26,0.05) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    .page {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
 
+    /* HEADER */
+    header {
+      padding: 20px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: var(--ochre); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem; font-weight: 600; color: var(--deep);
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 7px 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .back-btn:hover { color: var(--ochre); border-color: var(--ochre); }
+
+    /* MAIN CONTENT */
+    main { padding: 40px 48px 64px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+    /* ── RESULT HERO ── */
+    .result-hero {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 40px;
+      margin-bottom: 52px;
+      animation: rise 0.5s ease both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .image-panel {
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      background: var(--stone);
+      aspect-ratio: 4/3;
+    }
+    .image-panel img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .confidence-badge {
+      position: absolute;
+      bottom: 16px; left: 16px;
+      background: rgba(26,18,8,0.82);
+      color: white;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+      backdrop-filter: blur(8px);
+    }
+    .confidence-badge .pct {
+      color: var(--ochre);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* Info panel */
+    .info-panel {
+      display: flex; flex-direction: column; justify-content: center;
+    }
+
+    .monument-eyebrow {
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ochre); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .monument-eyebrow::before {
+      content: ''; display: block;
+      width: 28px; height: 1px; background: var(--ochre); opacity: 0.6;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+      font-weight: 300; line-height: 1.1;
+      color: var(--deep); margin-bottom: 24px;
+    }
+
+    /* Confidence bar */
+    .conf-row {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 28px;
+    }
+    .conf-label {
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); white-space: nowrap;
+    }
+    .conf-track {
+      flex: 1; height: 5px;
+      background: var(--stone); border-radius: 10px; overflow: hidden;
+    }
+    .conf-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--ochre), var(--rust));
+      border-radius: 10px;
+      transition: width 1s ease;
+      width: 0;
+    }
+    .conf-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; font-weight: 400;
+      color: var(--ochre); min-width: 55px; text-align: right;
+    }
+
+    /* Quick meta pills */
+    .meta-pills {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .pill {
+      font-size: 0.74rem; font-weight: 400;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: white;
+    }
+    .pill strong {
+      color: var(--deep); font-weight: 500;
+      margin-right: 4px;
+    }
+    .pill.green {
+      border-color: rgba(45,122,79,0.3);
+      color: var(--green);
+    }
+
+    /* ── INFO GRID ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      animation: rise 0.5s 0.15s ease both;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: box-shadow 0.2s;
+    }
+    .card:hover {
+      box-shadow: 0 4px 24px rgba(200,132,58,0.1);
+    }
+
+    .card-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .card-icon {
+      width: 32px; height: 32px;
+      background: var(--sand);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .card-title {
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card-body {
+      font-size: 0.9rem; font-weight: 300;
+      line-height: 1.75;
+      color: #3A3228;
+    }
+    .card-body.serif {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem; line-height: 1.8;
+    }
+
+    /* Wide card */
+    .card.wide { grid-column: 1 / -1; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 20px 48px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.72rem; color: var(--muted);
+    }
+
+    @media (max-width: 768px) {
+      header { padding: 16px 20px; }
+      main { padding: 24px 20px 48px; }
+      .result-hero { grid-template-columns: 1fr; }
+      .image-panel { aspect-ratio: 16/9; }
+      footer { padding: 16px 20px; flex-direction: column; gap: 6px; }
+    }
+  </style>
 </head>
-
 <body>
+<div class="page">
+  <header>
+    <a href="/" class="logo">
+      <div class="logo-icon">🏛</div>
+      <span class="logo-text">Heritage Vision</span>
+    </a>
+    <a href="/" class="back-btn">← Analyse another</a>
+  </header>
 
-    <div class="result-container">
+  <main>
+    <div class="result-hero">
+      <!-- Uploaded image -->
+      <div class="image-panel">
+        <img src="/{{ image_path }}" alt="{{ monument }}"/>
+        <div class="confidence-badge">
+          Confidence <span class="pct">{{ confidence }}%</span>
+        </div>
+      </div>
 
-        <h1>AI Heritage Analysis</h1>
+      <!-- Monument info -->
+      <div class="info-panel">
+        <p class="monument-eyebrow">Monument Identified</p>
+        <h1>{{ monument }}</h1>
 
-        <!-- TOP RESULT SECTION -->
-
-        <div class="top-result-section">
-
-            <!-- Uploaded Image -->
-
-            <div class="image-box">
-
-                <img src="/{{ image_path }}" class="result-image">
-
-            </div>
-
-            <!-- Prediction Card -->
-
-            <div class="result-card">
-
-                <h2>{{ monument }}</h2>
-
-                <p>Confidence Score</p>
-
-                <div class="confidence">
-                    {{ confidence }}%
-                </div>
-
-            </div>
-
+        <!-- Confidence bar -->
+        <div class="conf-row">
+          <span class="conf-label">Model confidence</span>
+          <div class="conf-track">
+            <div class="conf-fill" id="conf-fill"></div>
+          </div>
+          <span class="conf-num" id="conf-num">0%</span>
         </div>
 
-        <!-- Historical Information -->
-
-        <div class="info-section">
-
-            <h2>Historical Information</h2>
-
-            <div class="info-card">
-
-                <p>
-                    <strong>History:</strong><br>
-                    {{ history }}
-                </p>
-
-                <p>
-                    <strong>Dynasty:</strong><br>
-                    {{ dynasty }}
-                </p>
-
-                <p>
-                    <strong>Construction Period:</strong><br>
-                    {{ construction_period }}
-                </p>
-
-                <p>
-                    <strong>Architecture Style:</strong><br>
-                    {{ architecture }}
-                </p>
-
-                <p>
-                    <strong>UNESCO Status:</strong><br>
-                    {{ unesco_status }}
-                </p>
-
-                <p>
-                    <strong>Tourism Facts:</strong><br>
-                    {{ tourism_facts }}
-                </p>
-
-            </div>
-
+        <!-- Quick pills -->
+        <div class="meta-pills">
+          {% if dynasty and dynasty != "Information not available." %}
+          <span class="pill"><strong>Dynasty</strong>{{ dynasty }}</span>
+          {% endif %}
+          {% if construction_period and construction_period != "Information not available." %}
+          <span class="pill"><strong>Built</strong>{{ construction_period }}</span>
+          {% endif %}
+          {% if unesco_status and "UNESCO" in unesco_status %}
+          <span class="pill green">🏆 {{ unesco_status }}</span>
+          {% endif %}
         </div>
-
-        <!-- Back Button -->
-
-        <a href="/">
-
-            <button class="back-btn">
-                Analyze Another Monument
-            </button>
-
-        </a>
-
+      </div>
     </div>
 
-</body>
+    <!-- Detail cards -->
+    <div class="info-grid">
 
+      {% if history and history != "Information not available." %}
+      <div class="card wide">
+        <div class="card-header">
+          <div class="card-icon">📜</div>
+          <span class="card-title">History</span>
+        </div>
+        <p class="card-body serif">{{ history }}</p>
+      </div>
+      {% endif %}
+
+      {% if architecture and architecture != "Information not available." %}
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🏗</div>
+          <span class="card-title">Architecture</span>
+        </div>
+        <p class="card-body">{{ architecture }}</p>
+      </div>
+      {% endif %}
+
+      {% if tourism_facts and tourism_facts != "Information not available." %}
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🌍</div>
+          <span class="card-title">Tourism &amp; Facts</span>
+        </div>
+        <p class="card-body">{{ tourism_facts }}</p>
+      </div>
+      {% endif %}
+
+      {% if dynasty and dynasty != "Information not available." %}
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">👑</div>
+          <span class="card-title">Dynasty &amp; Era</span>
+        </div>
+        <div class="card-body">
+          <p><strong>Dynasty:</strong> {{ dynasty }}</p>
+          {% if construction_period and construction_period != "Information not available." %}
+          <p style="margin-top:8px"><strong>Construction period:</strong> {{ construction_period }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if unesco_status and unesco_status != "Information not available." %}
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🏆</div>
+          <span class="card-title">UNESCO Status</span>
+        </div>
+        <p class="card-body">{{ unesco_status }}</p>
+      </div>
+      {% endif %}
+
+    </div>
+  </main>
+
+  <footer>
+    <span>Heritage Vision AI</span>
+    <span>Powered by ResNet50 Transfer Learning</span>
+  </footer>
+</div>
+
+<script>
+  // Animate the confidence bar
+  const raw = "{{ confidence }}";
+  const pct = parseFloat(raw) || 0;
+  const fill = document.getElementById('conf-fill');
+  const num  = document.getElementById('conf-num');
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      fill.style.width = Math.min(pct, 100) + '%';
+      // Animate number count-up
+      let current = 0;
+      const step = pct / 60;
+      const interval = setInterval(() => {
+        current = Math.min(current + step, pct);
+        num.textContent = current.toFixed(1) + '%';
+        if (current >= pct) clearInterval(interval);
+      }, 16);
+    }, 200);
+  });
+</script>
+</body>
 </html>
