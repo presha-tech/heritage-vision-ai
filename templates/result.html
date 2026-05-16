@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Prediction Result</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+    <div class="result-container">
+
+        <h1>AI Heritage Analysis</h1>
+
+        <!-- TOP RESULT SECTION -->
+
+        <div class="top-result-section">
+
+            <!-- Uploaded Image -->
+
+            <div class="image-box">
+
+                <img src="/{{ image_path }}" class="result-image">
+
+            </div>
+
+            <!-- Prediction Card -->
+
+            <div class="result-card">
+
+                <h2>{{ monument }}</h2>
+
+                <p>Confidence Score</p>
+
+                <div class="confidence">
+                    {{ confidence }}%
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Historical Information -->
+
+        <div class="info-section">
+
+            <h2>Historical Information</h2>
+
+            <div class="info-card">
+
+                <p>
+                    <strong>History:</strong><br>
+                    {{ history }}
+                </p>
+
+                <p>
+                    <strong>Dynasty:</strong><br>
+                    {{ dynasty }}
+                </p>
+
+                <p>
+                    <strong>Construction Period:</strong><br>
+                    {{ construction_period }}
+                </p>
+
+                <p>
+                    <strong>Architecture Style:</strong><br>
+                    {{ architecture }}
+                </p>
+
+                <p>
+                    <strong>UNESCO Status:</strong><br>
+                    {{ unesco_status }}
+                </p>
+
+                <p>
+                    <strong>Tourism Facts:</strong><br>
+                    {{ tourism_facts }}
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- Back Button -->
+
+        <a href="/">
+
+            <button class="back-btn">
+                Analyze Another Monument
+            </button>
+
+        </a>
+
+    </div>
+
+</body>
+
+</html>

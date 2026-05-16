@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanskriti Sphere</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+            🛕 SANSKRITI SPHERE
+        </div>
+
+        <div class="nav-btn">
+            HERITAGE VISION AI
+        </div>
+
+    </header>
+
+    <section class="hero">
+
+        <h1>
+            UNVEIL INDIA’S
+            <span>SACRED STONES</span>
+        </h1>
+
+        <p>
+            Upload any photograph of an Indian monument and let our AI historian
+            reveal its secrets, stories, and soul.
+        </p>
+
+    </section>
+
+    <section class="upload-section">
+
+        <form action="/predict" method="POST" enctype="multipart/form-data">
+
+            <div class="upload-box">
+
+                <div class="icon">
+                    🏛️
+                </div>
+
+                <h2>OFFER YOUR PHOTOGRAPH</h2>
+
+                <p>Drop an image here, or click to choose a file</p>
+
+                <input type="file" name="image" required>
+
+                <button type="submit">
+                    ↑ CHOOSE IMAGE
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</body>
+</html>
