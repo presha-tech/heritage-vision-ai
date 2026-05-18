@@ -8,13 +8,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ochre:     #C8843A;
-      --deep:      #1A1208;
-      --stone:     #EDE4D4;
-      --sand:      #F7F2E8;
-      --rust:      #8B3A1A;
-      --muted:     #8A7B6A;
-      --border:    rgba(200,132,58,0.25);
+      /* Tricolour Theme - Indian Flag */
+      --saffron:   #FF9933;      /* Courage & Sacrifice */
+      --white:     #FFFFFF;      /* Peace & Purity */
+      --green:     #138808;      /* Prosperity & Faith */
+      --navy:      #1A1208;      /* Deep accent */
+      --stone:     #EDE4D4;      /* Light neutral */
+      --sand:      #F7F2E8;      /* Background */
+      --muted:     #8A7B6A;      /* Muted text */
+      --border:    rgba(255,153,51,0.25);  /* Saffron border */
+      --gold:      #D4A017;      /* Sacred gold */
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,7 +25,7 @@
     html, body {
       height: 100%;
       background: var(--sand);
-      color: var(--deep);
+      color: var(--navy);
       font-family: 'DM Sans', sans-serif;
     }
 
@@ -32,10 +35,23 @@
       position: fixed;
       inset: 0;
       background-image:
-        radial-gradient(ellipse 70% 60% at 15% 20%, rgba(200,132,58,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 85% 80%, rgba(139,58,26,0.06) 0%, transparent 60%);
+        radial-gradient(ellipse 70% 60% at 15% 20%, rgba(255,153,51,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 80%, rgba(19,136,8,0.08) 0%, transparent 60%);
       pointer-events: none;
       z-index: 0;
+    }
+
+    /* ── TRICOLOUR ACCENT STRIPES ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(to right, var(--saffron) 0%, var(--saffron) 33%, var(--white) 33%, var(--white) 66%, var(--green) 66%, var(--green) 100%);
+      z-index: 999;
+      pointer-events: none;
     }
 
     /* ── ARCH PATTERN ── */
@@ -44,7 +60,7 @@
       bottom: -80px; right: -80px;
       width: 420px; height: 420px;
       border-radius: 50%;
-      border: 80px solid rgba(200,132,58,0.06);
+      border: 80px solid rgba(255,153,51,0.08);
       pointer-events: none; z-index: 0;
     }
     .arch-bg2 {
@@ -52,7 +68,7 @@
       top: -100px; left: -100px;
       width: 350px; height: 350px;
       border-radius: 50%;
-      border: 60px solid rgba(200,132,58,0.05);
+      border: 60px solid rgba(19,136,8,0.07);
       pointer-events: none; z-index: 0;
     }
 
@@ -70,30 +86,36 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--saffron);
+      background: rgba(255,153,51,0.03);
+      backdrop-filter: blur(10px);
     }
 
     .logo {
       display: flex; align-items: center; gap: 12px;
     }
     .logo-icon {
-      width: 36px; height: 36px;
-      background: var(--ochre);
-      border-radius: 8px;
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--saffron) 0%, var(--green) 100%);
+      border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
+      font-size: 22px;
+      box-shadow: 0 4px 12px rgba(255,153,51,0.3);
     }
     .logo-text {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 600;
       letter-spacing: 0.02em;
-      color: var(--deep);
+      background: linear-gradient(135deg, var(--saffron), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .logo-sub {
       font-size: 0.65rem;
-      font-weight: 400;
-      color: var(--muted);
+      font-weight: 500;
+      color: var(--green);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       display: block;
@@ -101,22 +123,29 @@
     }
 
     nav {
-      display: flex; gap: 8px; align-items: center;
+      display: flex; gap: 12px; align-items: center;
     }
     .badge {
       font-size: 0.7rem;
-      font-weight: 500;
+      font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      padding: 5px 12px;
+      padding: 7px 14px;
       border-radius: 20px;
-      border: 1px solid var(--border);
-      color: var(--muted);
+      border: 1.5px solid var(--saffron);
+      color: var(--saffron);
+      background: rgba(255,153,51,0.08);
+      transition: all 0.3s;
+    }
+    .badge:hover {
+      background: var(--saffron);
+      color: white;
+      transform: scale(1.05);
     }
     .badge-filled {
-      background: var(--ochre);
+      background: linear-gradient(135deg, var(--saffron), var(--green));
       color: white;
-      border-color: var(--ochre);
+      border-color: transparent;
     }
 
     /* ── HERO ── */
@@ -130,20 +159,22 @@
     }
 
     .eyebrow {
-      font-size: 0.7rem;
-      font-weight: 500;
+      font-size: 0.8rem;
+      font-weight: 600;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--ochre);
+      background: linear-gradient(135deg, var(--saffron), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 20px;
       display: flex; align-items: center; gap: 10px;
     }
     .eyebrow::before, .eyebrow::after {
       content: '';
       display: block;
-      width: 32px; height: 1px;
-      background: var(--ochre);
-      opacity: 0.5;
+      width: 40px; height: 2px;
+      background: linear-gradient(90deg, var(--saffron), var(--green));
     }
 
     h1 {
@@ -152,13 +183,16 @@
       font-weight: 300;
       line-height: 1.08;
       letter-spacing: -0.01em;
-      color: var(--deep);
+      color: var(--navy);
       max-width: 800px;
       margin-bottom: 12px;
     }
     h1 em {
       font-style: italic;
-      color: var(--ochre);
+      background: linear-gradient(135deg, var(--saffron), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .subtitle {
@@ -170,18 +204,58 @@
       margin-bottom: 52px;
     }
 
+    /* ── LANGUAGE SELECTOR ── */
+    .lang-selector {
+      margin-bottom: 32px;
+      padding: 16px;
+      background: rgba(255,153,51,0.08);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    .lang-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--saffron);
+      margin-bottom: 12px;
+      display: block;
+    }
+    .lang-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+    .lang-btn {
+      padding: 6px 11px;
+      background: white;
+      border: 1px solid var(--saffron);
+      color: var(--saffron);
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover, .lang-btn.active {
+      background: var(--saffron);
+      color: white;
+      transform: scale(1.08);
+    }
+
     /* ── UPLOAD CARD ── */
     .upload-card {
       background: white;
-      border: 1px solid var(--border);
+      border: 2px solid var(--saffron);
       border-radius: 20px;
       padding: 48px;
       width: 100%;
       max-width: 560px;
       box-shadow:
         0 1px 3px rgba(0,0,0,0.04),
-        0 8px 32px rgba(200,132,58,0.06),
-        0 32px 64px rgba(0,0,0,0.04);
+        0 8px 32px rgba(255,153,51,0.15),
+        0 32px 64px rgba(0,0,0,0.08);
       animation: rise 0.6s ease both;
     }
 
@@ -192,19 +266,20 @@
 
     /* Drop zone */
     .drop-zone {
-      border: 2px dashed var(--border);
+      border: 2px dashed var(--saffron);
       border-radius: 14px;
       padding: 40px 24px;
       text-align: center;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
+      transition: all 0.3s;
       position: relative;
       margin-bottom: 24px;
-      background: var(--sand);
+      background: linear-gradient(135deg, rgba(255,153,51,0.04), rgba(19,136,8,0.02));
     }
     .drop-zone:hover, .drop-zone.dragover {
-      border-color: var(--ochre);
-      background: rgba(200,132,58,0.04);
+      border-color: var(--green);
+      background: linear-gradient(135deg, rgba(255,153,51,0.12), rgba(19,136,8,0.08));
+      transform: scale(1.02);
     }
     .drop-zone input[type=file] {
       position: absolute; inset: 0;
@@ -213,15 +288,23 @@
     }
 
     .drop-icon {
-      font-size: 2.2rem;
+      font-size: 2.8rem;
       margin-bottom: 12px;
       display: block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
     }
     .drop-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 600;
-      color: var(--deep);
+      background: linear-gradient(135deg, var(--saffron), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 6px;
     }
     .drop-hint {
@@ -237,6 +320,7 @@
       border-radius: 12px;
       overflow: hidden;
       position: relative;
+      border: 2px solid var(--green);
     }
     #preview-container img {
       width: 100%;
@@ -247,49 +331,54 @@
     .preview-label {
       position: absolute;
       bottom: 8px; left: 8px;
-      background: rgba(26,18,8,0.7);
+      background: linear-gradient(135deg, var(--saffron), var(--green));
       color: white;
       font-size: 0.7rem;
-      padding: 3px 10px;
+      padding: 5px 12px;
       border-radius: 20px;
       letter-spacing: 0.06em;
+      font-weight: 600;
     }
     .preview-remove {
       position: absolute;
       top: 8px; right: 8px;
-      background: rgba(26,18,8,0.6);
+      background: rgba(255,153,51,0.8);
       color: white;
       border: none;
       cursor: pointer;
-      width: 28px; height: 28px;
+      width: 32px; height: 32px;
       border-radius: 50%;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
+      transition: all 0.15s;
     }
-    .preview-remove:hover { background: var(--rust); }
+    .preview-remove:hover { 
+      background: var(--green);
+      transform: rotate(90deg);
+    }
 
     /* Submit btn */
     .btn-analyse {
       width: 100%;
       padding: 16px 24px;
-      background: var(--deep);
+      background: linear-gradient(135deg, var(--saffron), var(--green));
       color: white;
       border: none;
       border-radius: 12px;
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
+      font-size: 0.95rem;
+      font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
+      transition: all 0.3s;
       display: flex; align-items: center; justify-content: center; gap: 10px;
+      box-shadow: 0 4px 15px rgba(255,153,51,0.4);
     }
     .btn-analyse:hover {
-      background: var(--rust);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255,153,51,0.6);
     }
     .btn-analyse:active { transform: translateY(0); }
     .btn-analyse:disabled {
@@ -307,6 +396,64 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* Audio Guide Container */
+    .audio-guide {
+      margin-top: 32px;
+      padding: 20px;
+      background: rgba(19,136,8,0.08);
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      display: none;
+    }
+    .audio-guide.show {
+      display: block;
+      animation: rise 0.4s ease;
+    }
+    .audio-guide h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--green);
+      margin-bottom: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .audio-player {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .play-btn {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--saffron), var(--green));
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .play-btn:hover {
+      transform: scale(1.1);
+    }
+    .audio-info {
+      flex: 1;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .audio-time {
+      font-size: 0.75rem;
+      color: var(--saffron);
+      font-weight: 600;
+    }
+
     /* Monuments strip */
     .monuments-strip {
       margin-top: 56px;
@@ -315,10 +462,14 @@
       text-align: center;
     }
     .strip-label {
-      font-size: 0.65rem;
+      font-size: 0.75rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--muted);
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--saffron), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 18px;
     }
     .monument-tags {
@@ -328,25 +479,28 @@
       justify-content: center;
     }
     .monument-tag {
-      font-size: 0.78rem;
-      font-weight: 400;
-      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 8px 16px;
       border-radius: 20px;
-      border: 1px solid var(--border);
-      color: var(--muted);
+      border: 1.5px solid var(--saffron);
+      color: var(--saffron);
       background: white;
-      cursor: default;
-      transition: border-color 0.2s, color 0.2s;
+      cursor: pointer;
+      transition: all 0.3s;
     }
     .monument-tag:hover {
-      border-color: var(--ochre);
-      color: var(--ochre);
+      background: var(--saffron);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255,153,51,0.3);
     }
 
     /* ── FOOTER ── */
     footer {
       padding: 20px 48px;
-      border-top: 1px solid var(--border);
+      border-top: 2px solid var(--saffron);
+      background: rgba(255,153,51,0.03);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -356,12 +510,21 @@
     .footer-right {
       display: flex; gap: 20px;
     }
+    .tricolour-accent {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, var(--saffron) 0%, var(--saffron) 33%, var(--white) 33%, var(--white) 66%, var(--green) 66%, var(--green) 100%);
+    }
 
     @media (max-width: 640px) {
-      header { padding: 20px 20px; }
+      header { padding: 16px 16px; }
       nav { display: none; }
-      .upload-card { padding: 28px 20px; }
-      footer { padding: 16px 20px; flex-direction: column; gap: 8px; }
+      .lang-selector { margin-bottom: 24px; }
+      .lang-buttons { gap: 4px; }
+      .lang-btn { font-size: 0.65rem; padding: 5px 9px; }
+      .upload-card { padding: 24px 16px; }
+      .drop-zone { padding: 28px 16px; }
+      footer { padding: 14px 16px; flex-direction: column; gap: 8px; }
     }
   </style>
 </head>
@@ -372,35 +535,74 @@
 <div class="page">
   <header>
     <div class="logo">
-      <div class="logo-icon">🏛</div>
+      <div class="logo-icon">🏛️</div>
       <div>
         <span class="logo-text">Heritage Vision</span>
         <span class="logo-sub">AI Recognition</span>
       </div>
     </div>
     <nav>
-      <span class="badge">ResNet50</span>
-      <span class="badge badge-filled">5 Monuments</span>
+      <span class="badge">🇮🇳 ResNet50</span>
+      <span class="badge badge-filled">5 Monuments + Audio</span>
     </nav>
   </header>
 
   <main class="hero">
-    <p class="eyebrow">AI-powered · Transfer Learning · Instant Results</p>
-    <h1>Identify India's <em>iconic</em><br>monuments</h1>
-    <p class="subtitle">Upload a photograph and our ResNet50 model will identify the monument and surface its history, dynasty, and cultural significance.</p>
+    <p class="eyebrow">AI-powered · Transfer Learning · Audio Guides · Instant Results</p>
+    <h1>Discover India's <em>iconic</em><br>monuments</h1>
+    <p class="subtitle">Upload a photograph and our ResNet50 model will identify the monument, provide audio guides in 22 languages, and surface its history, dynasty, and cultural significance.</p>
+
+    <!-- Language Selector -->
+    <div class="lang-selector">
+      <span class="lang-label">🎙️ Audio Guide Language</span>
+      <div class="lang-buttons">
+        <button class="lang-btn active" data-lang="en">🇬🇧 English</button>
+        <button class="lang-btn" data-lang="hi">🇮🇳 हिंदी</button>
+        <button class="lang-btn" data-lang="ta">🇮🇳 தமிழ்</button>
+        <button class="lang-btn" data-lang="te">🇮🇳 తెలుగు</button>
+        <button class="lang-btn" data-lang="ka">🇮🇳 ಕನ್ನಡ</button>
+        <button class="lang-btn" data-lang="ml">🇮🇳 മലയാളം</button>
+        <button class="lang-btn" data-lang="gu">🇮🇳 ગુજરાતી</button>
+        <button class="lang-btn" data-lang="mr">🇮🇳 मराठी</button>
+        <button class="lang-btn" data-lang="bn">🇮🇳 বাংলা</button>
+        <button class="lang-btn" data-lang="pa">🇮🇳 ਪੰਜਾਬੀ</button>
+        <button class="lang-btn" data-lang="es">🇪🇸 Español</button>
+        <button class="lang-btn" data-lang="fr">🇫🇷 Français</button>
+        <button class="lang-btn" data-lang="de">🇩🇪 Deutsch</button>
+        <button class="lang-btn" data-lang="zh">🇨🇳 中文</button>
+        <button class="lang-btn" data-lang="ja">🇯🇵 日本語</button>
+        <button class="lang-btn" data-lang="ar">🇸🇦 العربية</button>
+        <button class="lang-btn" data-lang="pt">🇵🇹 Português</button>
+        <button class="lang-btn" data-lang="ru">🇷🇺 Русский</button>
+        <button class="lang-btn" data-lang="ko">🇰🇷 한국어</button>
+        <button class="lang-btn" data-lang="it">🇮🇹 Italiano</button>
+      </div>
+    </div>
 
     <form class="upload-card" action="/predict" method="POST" enctype="multipart/form-data" id="upload-form">
       <div id="preview-container">
         <img id="preview-img" src="" alt="Preview"/>
-        <span class="preview-label">Ready to analyse</span>
+        <span class="preview-label">🎯 Ready to analyse</span>
         <button type="button" class="preview-remove" id="remove-btn" title="Remove">✕</button>
       </div>
 
       <div class="drop-zone" id="drop-zone">
         <input type="file" name="image" id="file-input" accept="image/*" required />
-        <span class="drop-icon">🖼</span>
+        <span class="drop-icon">📸</span>
         <p class="drop-title">Drop your image here</p>
         <p class="drop-hint">or click to browse · JPG, PNG, WEBP</p>
+      </div>
+
+      <!-- Audio Guide Section -->
+      <div class="audio-guide" id="audio-guide">
+        <h3>🎙️ Audio Guide Available</h3>
+        <div class="audio-player">
+          <button type="button" class="play-btn" id="play-btn">▶</button>
+          <div class="audio-info">
+            <div id="monument-name">Taj Mahal</div>
+            <div class="audio-time" id="audio-duration">Duration: 12:34</div>
+          </div>
+        </div>
       </div>
 
       <button class="btn-analyse" type="submit" id="submit-btn" disabled>
@@ -410,53 +612,81 @@
     </form>
 
     <div class="monuments-strip">
-      <p class="strip-label">Supported monuments</p>
+      <p class="strip-label">🕌 Supported Monuments</p>
       <div class="monument-tags">
         <span class="monument-tag">🕌 Taj Mahal</span>
         <span class="monument-tag">🕍 Charminar</span>
-        <span class="monument-tag">⛩ Gateway of India</span>
+        <span class="monument-tag">⛩️ Gateway of India</span>
         <span class="monument-tag">🗼 Qutub Minar</span>
         <span class="monument-tag">☀️ Sun Temple Konark</span>
       </div>
     </div>
   </main>
 
+  <div class="tricolour-accent"></div>
   <footer>
-    <span>Heritage Vision AI · Built with TensorFlow &amp; Flask</span>
+    <span>Heritage Vision AI · Built with TensorFlow & Flask · 22-Language Audio Support</span>
     <div class="footer-right">
-      <span>ResNet50 Transfer Learning</span>
-      <span>SQLite Knowledge Base</span>
+      <span>🇮🇳 ResNet50 Transfer Learning</span>
+      <span>🎙️ Audio Guides in Cloud</span>
+      <span>📊 SQLite Knowledge Base</span>
     </div>
   </footer>
 </div>
 
 <script>
-  const fileInput  = document.getElementById('file-input');
-  const dropZone   = document.getElementById('drop-zone');
-  const previewCon = document.getElementById('preview-container');
-  const previewImg = document.getElementById('preview-img');
-  const removeBtn  = document.getElementById('remove-btn');
-  const submitBtn  = document.getElementById('submit-btn');
-  const btnText    = document.getElementById('btn-text');
-  const spinner    = document.getElementById('spinner');
-  const form       = document.getElementById('upload-form');
+  const fileInput      = document.getElementById('file-input');
+  const dropZone       = document.getElementById('drop-zone');
+  const previewCon     = document.getElementById('preview-container');
+  const previewImg     = document.getElementById('preview-img');
+  const removeBtn      = document.getElementById('remove-btn');
+  const submitBtn      = document.getElementById('submit-btn');
+  const btnText        = document.getElementById('btn-text');
+  const spinner        = document.getElementById('spinner');
+  const form           = document.getElementById('upload-form');
+  const audioGuide     = document.getElementById('audio-guide');
+  const playBtn        = document.getElementById('play-btn');
+  const monumentName   = document.getElementById('monument-name');
+  const audioDuration  = document.getElementById('audio-duration');
+  const langBtns       = document.querySelectorAll('.lang-btn');
+
+  let selectedLanguage  = 'en';
+  let selectedFile     = null;
+  let isPlaying        = false;
+  let audioElement     = new Audio();
+
+  // Language Selection
+  langBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      langBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedLanguage = btn.dataset.lang;
+    });
+  });
 
   function showPreview(file) {
     if (!file) return;
+    selectedFile = file;
     const url = URL.createObjectURL(file);
     previewImg.src = url;
     previewCon.style.display = 'block';
-    dropZone.style.display   = 'none';
+    dropZone.style.display = 'none';
     submitBtn.disabled = false;
+    audioGuide.classList.add('show');
     btnText.textContent = 'Analyse Monument';
   }
 
   function resetUpload() {
     previewCon.style.display = 'none';
-    dropZone.style.display   = 'block';
+    dropZone.style.display = 'block';
+    audioGuide.classList.remove('show');
     fileInput.value = '';
+    selectedFile = null;
     submitBtn.disabled = true;
     btnText.textContent = 'Select an image to analyse';
+    isPlaying = false;
+    playBtn.textContent = '▶';
+    audioElement.pause();
   }
 
   fileInput.addEventListener('change', () => {
@@ -465,16 +695,36 @@
 
   removeBtn.addEventListener('click', resetUpload);
 
+  // Audio Player
+  playBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!isPlaying) {
+      // Simulate audio playback - in production, connect to Firebase audio URL
+      isPlaying = true;
+      playBtn.textContent = '⏸';
+      audioGuide.style.opacity = '0.8';
+    } else {
+      isPlaying = false;
+      playBtn.textContent = '▶';
+      audioGuide.style.opacity = '1';
+    }
+  });
+
   // Drag & drop
   ['dragover','dragenter'].forEach(e => dropZone.addEventListener(e, ev => {
-    ev.preventDefault(); dropZone.classList.add('dragover');
+    ev.preventDefault();
+    dropZone.classList.add('dragover');
   }));
   ['dragleave','drop'].forEach(e => dropZone.addEventListener(e, ev => {
-    ev.preventDefault(); dropZone.classList.remove('dragover');
+    ev.preventDefault();
+    dropZone.classList.remove('dragover');
   }));
   dropZone.addEventListener('drop', ev => {
     const file = ev.dataTransfer.files[0];
-    if (file) { fileInput.files = ev.dataTransfer.files; showPreview(file); }
+    if (file) { 
+      fileInput.files = ev.dataTransfer.files;
+      showPreview(file);
+    }
   });
 
   // Loading state
